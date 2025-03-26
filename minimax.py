@@ -4,40 +4,37 @@ from gym_tictactoe.env import TicTacToeEnv, agent_by_mark, check_game_status,\
 
 
 class MinimaxAgent(object):
-    def __init__(self, mark):
+    def __init__(self, mark, prune = False):
         self.mark = mark
+        self.prune = prune
 
-    def _minimax(self, state, ava_actions, is_maximising, depth):
-        # factor = 1 if is_maximising else -1  # always maximise below so this will be used to reverse the order for minimising values
+    def _minimax(self, state, ava_actions, is_maximising, depth, alpha = None):
         gstatus = check_game_status(state[0])
         # if its a draw
         if gstatus == 0:
-            # return -5 * factor, None
-            # return -5 if is_maximising esle 5, None
             return 0, None #### ***************** DISCUSS HOW CHANGING THIS AFFECTED THE FREQUENCY OF DRAWS [IF ITS -10, ITS THE SAME AS LOSING SO ITLL JUST DO WHICHEVER IT SEES FIRST INSTEAD OF FAVOURING THE DRAW, EVRYTHING ELSE SEEMS TO GIVE ABOUT 40% DRAW]
         # if the game has been won (by the previous player as they just moved)
         elif gstatus > 0:
             return -10 if is_maximising else 10, None  # who just moved?? if its not this player then reversE returns 
-            # return -10 * factor, None 
         else:
             best = float('-inf') if is_maximising else float('inf')
-            # best = float('-inf')
             best_action = None
 
             for action in ava_actions:
                 nstate = after_action_state(state, action)
                 nava_actions = ava_actions.copy()
                 nava_actions.remove(action)
-                val, _ = self._minimax(nstate, nava_actions, not is_maximising, depth+1) 
-                # if val * factor > best:
-                #     best = val
-                #     best_action = action
+                val, _ = self._minimax(nstate, nava_actions, not is_maximising, depth+1, best) 
                 if is_maximising and val > best:
                     best = val
                     best_action = action
+                    if self.prune and alpha is not None and best >= alpha:  # prune
+                        break
                 elif not is_maximising and val < best:
                     best = val 
                     best_action = action
+                    if self.prune and alpha is not None and best <= alpha:  # prune
+                        break
             
             return best, best_action
         

@@ -8,8 +8,8 @@ from gym_tictactoe.env import TicTacToeEnv, agent_by_mark, next_mark
 def play(max_episode=10):
     start_mark = 'O'
     env = TicTacToeEnv()
-    agents = [MinimaxAgent('O'),
-              Oponent('X')]
+    agents = [MinimaxAgent('O', True),
+              MinimaxAgent('X')]
 
     for _ in range(max_episode):
         env.set_start_mark(start_mark)
