@@ -14,8 +14,9 @@ class BaseAgent(object):
             nstate = after_action_state(state, action)
             gstatus = check_game_status(nstate[0])
             if gstatus > 0:
-                if tomark(gstatus) == self.mark:
-                    return action
+                return action
+                # if tomark(gstatus) == self.mark:
+                #     return action
         return random.choice(ava_actions)
 
 
